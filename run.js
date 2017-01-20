@@ -9,7 +9,7 @@ var bot = new Discord.Client({
 
 bot.on('ready', function() {
   console.log(bot.username + " - (" + bot.id + ")");
-  var tweets = require("./twitter.js")(this);
+  //var tweets = require("./twitter.js")(this);
 });
 
 bot.on('message', function(user, userID, channelID, message, event) {
@@ -35,12 +35,18 @@ bot.on('message', function(user, userID, channelID, message, event) {
       "default": () => { return "No command found."; }
     };
 
-    var result = commands[first]();
-    if (typeof result === "string") {
-      bot.sendMessage({
-        to: channelID,
-        message: result
-      });
+    if (/^[a-z0-9]+$/i.test(first)) {
+      var result = (commands[first] || commands["default"])();
+      if (typeof result === "string") {
+        bot.sendMessage({
+          to: channelID,
+          message: result
+        });
+      }
     }
   }
+});
+
+bot.on('disconnect', function() {
+  bot.connect();
 });
